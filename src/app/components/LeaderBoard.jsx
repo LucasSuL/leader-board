@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import supabase from "../config/Database";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export function LeaderBoard() {
   const [dataList, setDataList] = useState([]);
@@ -111,7 +112,31 @@ export function LeaderBoard() {
                   onBlur={(e) => handleBlur(e, entry)} // Use a function reference
                 />
               </TableCell>
-              <TableCell className="text-right">{entry.total}</TableCell>
+              <TableCell className="text-right">
+                {entry.change > 0 ? (
+                  <div className="flex gap-2 items-center justify-end ">
+                    <Image
+                      src={"/icons8-arrow-48.png"}
+                      width={15}
+                      height={15}
+                      alt="up"
+                    ></Image>
+                    {entry.total}
+                  </div>
+                ) : entry.change < 0 ? (
+                  <div className="flex gap-2 items-center justify-end ">
+                    <Image
+                      src={"/icons8-arrow-d-48.png"}
+                      width={15}
+                      height={15}
+                      alt="down"
+                    ></Image>
+                    {entry.total}
+                  </div>
+                ) : (
+                  entry.total
+                )}
+              </TableCell>
             </TableRow>
           ))}
       </TableBody>
