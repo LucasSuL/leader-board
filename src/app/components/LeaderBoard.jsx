@@ -92,9 +92,12 @@ export function LeaderBoard() {
               <TableCell>
                 <Input
                   type="number"
-                  placeholder="50"
+                  step="any"
+                  placeholder="example: 50"
                   defaultValue={entry.change}
-                  onBlur={(e) => updateData(entry.id, parseInt(e.target.value))} // Update data on blur event
+                  onBlur={(e) =>
+                    updateData(entry.id, parseFloat(e.target.value))
+                  } // Update data on blur event
                 />
               </TableCell>
               <TableCell className="text-right">{entry.total}</TableCell>
