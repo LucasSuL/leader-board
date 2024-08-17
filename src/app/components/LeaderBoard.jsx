@@ -1,44 +1,102 @@
+"use client";
+
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { invoices } from "../config/data";
 import { Input } from "@/components/ui/input";
+import supabase from "../config/Database";
+import { useEffect, useState } from "react";
 
 export function LeaderBoard() {
+  const [dataList, setDataList] = useState([]);
+
+  useEffect(() => {
+    getList();
+  }, []);
+
+  const getList = async () => {
+    let { data: leaderBoard, error } = await supabase
+      .from("leaderBoard")
+      .select("*")
+      .order("total", { ascending: false }); // Sort by total in descending order
+
+    if (error) {
+      throw error;
+    }
+
+    setDataList(leaderBoard);
+    console.log(leaderBoard);
+  };
+
+  const updateData = async (id, newValue) => {
+    // Fetch the current data for the entry
+    const { data: currentEntry, error: fetchError } = await supabase
+      .from("leaderBoard")
+      .select("total")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching current data:", fetchError);
+      return;
+    }
+
+    const newTotal = currentEntry.total + newValue;
+
+    // Update the entry with the new values
+    const { data, error } = await supabase
+      .from("leaderBoard")
+      .update({
+        change: newValue,
+        total: newTotal,
+      })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error updating data:", error);
+    } else {
+      console.log("Data updated:", data);
+      // Optionally, refresh the data list after updating
+      getList();
+    }
+  };
+
   return (
-    <Table className="text-xl">
+    <Table className="">
       <TableCaption>Leader board</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[200px]">Player&apos;s Name</TableHead>
-          {/* <TableHead>Status</TableHead> */}
-          <TableHead>Session Change</TableHead>
-          <TableHead>S2 Income</TableHead>
-          <TableHead>S1 Income</TableHead>
+          <TableHead >Player&apos;s Name</TableHead>
+          <TableHead>Current Session Change</TableHead>
+          {/* <TableHead>Current Season</TableHead> */}
+          {/* <TableHead>Previous Seasons</TableHead> */}
           <TableHead className="text-right">Total Amount</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.name}>
-            <TableCell className="font-medium">{invoice.name}</TableCell>
-            <TableCell>
-               <Input type="number" placeholder="e.g. +50" />
-            </TableCell>
-            <TableCell>{invoice.s2}</TableCell>
-            <TableCell>{invoice.s1}</TableCell>
-            <TableCell className="text-right">
-              {invoice.s1 + invoice.s2}
-            </TableCell>
-          </TableRow>
-        ))}
+        {dataList &&
+          dataList.map((entry) => (
+            <TableRow key={entry.id}>
+              <TableCell className="font-medium">{entry.name}</TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  placeholder="+50"
+                  defaultValue={entry.change}
+                  onBlur={(e) => updateData(entry.id, parseInt(e.target.value))} // Update data on blur event
+                />
+              </TableCell>
+              {/* <TableCell>{entry.s2}</TableCell> */}
+              {/* <TableCell>{entry.s1}</TableCell> */}
+              <TableCell className="text-right">{entry.total}</TableCell>
+            </TableRow>
+          ))}
       </TableBody>
       {/* <TableFooter>
         <TableRow>
