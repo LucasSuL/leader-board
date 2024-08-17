@@ -27,26 +27,11 @@ export function LeaderBoard() {
       .order("total", { ascending: false }); // Sort by total in descending order
 
     if (error) {
-      console.error("Error fetching leaderboard:", error);
-      return;
+      throw error;
     }
 
     setDataList(leaderBoard);
     console.log(leaderBoard);
-  };
-
-  const handleBlur = async (e, entry) => {
-    // Retrieve value from input field
-    const value = e.target.value;
-
-    // Validate if the value is a number or decimal
-    const parsedValue = parseFloat(value);
-    if (!isNaN(parsedValue)) {
-      await updateData(entry.id, parsedValue);
-    } else {
-      // Handle invalid input if necessary
-      console.warn("Invalid input. Please enter a valid number.");
-    }
   };
 
   const updateData = async (id, newValue) => {
@@ -62,7 +47,7 @@ export function LeaderBoard() {
       return;
     }
 
-    const newTotal = (currentEntry.total || 0) + newValue;
+    const newTotal = currentEntry.total + newValue;
 
     // Update the entry with the new values
     const { data, error } = await supabase
@@ -83,12 +68,14 @@ export function LeaderBoard() {
   };
 
   return (
-    <Table>
+    <Table className="">
       <TableCaption>Last updated: 17 Aug 2024</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Player&apos;s Name</TableHead>
           <TableHead>Current Session Change</TableHead>
+          {/* <TableHead>Current Season</TableHead> */}
+          {/* <TableHead>Previous Seasons</TableHead> */}
           <TableHead className="text-right">Total Amount</TableHead>
         </TableRow>
       </TableHeader>
@@ -96,7 +83,7 @@ export function LeaderBoard() {
         {dataList &&
           dataList.map((entry, index) => (
             <TableRow key={entry.id}>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium ">
                 {index === 0 && `🥇 ${entry.name}`}
                 {index === 1 && `🥈 ${entry.name}`}
                 {index === 2 && `🥉 ${entry.name}`}
@@ -108,7 +95,9 @@ export function LeaderBoard() {
                   step="any"
                   placeholder="example: 50"
                   defaultValue={entry.change}
-                  onBlur={(e) => handleBlur(e, entry)} // Use a function reference
+                  onBlur={(e) =>
+                    updateData(entry.id, parseFloat(e.target.value))
+                  } // Update data on blur event
                 />
               </TableCell>
               <TableCell className="text-right">{entry.total}</TableCell>
