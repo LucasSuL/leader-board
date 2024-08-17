@@ -12,8 +12,16 @@ export default function Home() {
       </div>
 
       {/* img */}
-      <Image src={'/chips.png'} width={600} height={300} alt="chips"></Image>
-
+      <div className="w-full max-h-72 overflow-hidden">
+        <Image
+          src="/chips.png"
+          width={600}
+          height={300}
+          layout="responsive"
+          className="w-full h-full object-cover"
+          alt="chips"
+        />
+      </div>
 
       {/* promo */}
       <div className="mx-auto max-w-screen-xl px-4 pt-8 sm:px-6 sm:py-12 lg:px-8">
