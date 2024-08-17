@@ -69,10 +69,10 @@ export function LeaderBoard() {
 
   return (
     <Table className="">
-      <TableCaption>Leader board</TableCaption>
+      <TableCaption>Last updated: 17 Aug 2024</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead >Player&apos;s Name</TableHead>
+          <TableHead>Player&apos;s Name</TableHead>
           <TableHead>Current Session Change</TableHead>
           {/* <TableHead>Current Season</TableHead> */}
           {/* <TableHead>Previous Seasons</TableHead> */}
@@ -81,29 +81,26 @@ export function LeaderBoard() {
       </TableHeader>
       <TableBody>
         {dataList &&
-          dataList.map((entry) => (
+          dataList.map((entry, index) => (
             <TableRow key={entry.id}>
-              <TableCell className="font-medium">{entry.name}</TableCell>
+              <TableCell className="font-medium ">
+                {index === 0 && `🥇 ${entry.name}`}
+                {index === 1 && `🥈 ${entry.name}`}
+                {index === 2 && `🥉 ${entry.name}`}
+                {index > 2 && entry.name}
+              </TableCell>
               <TableCell>
                 <Input
                   type="number"
-                  placeholder="+50"
+                  placeholder="50"
                   defaultValue={entry.change}
                   onBlur={(e) => updateData(entry.id, parseInt(e.target.value))} // Update data on blur event
                 />
               </TableCell>
-              {/* <TableCell>{entry.s2}</TableCell> */}
-              {/* <TableCell>{entry.s1}</TableCell> */}
               <TableCell className="text-right">{entry.total}</TableCell>
             </TableRow>
           ))}
       </TableBody>
-      {/* <TableFooter>
-        <TableRow>
-          <TableCell colSpan={4}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter> */}
     </Table>
   );
 }
