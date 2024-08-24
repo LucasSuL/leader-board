@@ -10,27 +10,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import supabase from "../config/Database";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
 
 export function LeaderBoard() {
   const [dataList, setDataList] = useState([]);
-  const [inputValues, setInputValues] = useState({});
 
   useEffect(() => {
     getList();
@@ -51,22 +37,16 @@ export function LeaderBoard() {
     console.log(leaderBoard);
   };
 
-  const handleInputChange = (e, id) => {
+  const handleBlur = async (e, entry) => {
+    // Retrieve value from input field
     const value = e.target.value;
-    // Allow empty string (for deletion) or a valid number
-    if (value === "" || !isNaN(value)) {
-      setInputValues((prevValues) => ({
-        ...prevValues,
-        [id]: value,
-      }));
-    }
-  };
 
-  const handleSubmit = async (id) => {
-    const newValue = parseFloat(inputValues[id]);
-    if (!isNaN(newValue)) {
-      await updateData(id, newValue);
+    // Validate if the value is a number or decimal
+    const parsedValue = parseFloat(value);
+    if (!isNaN(parsedValue)) {
+      await updateData(entry.id, parsedValue);
     } else {
+      // Handle invalid input if necessary
       console.warn("Invalid input. Please enter a valid number.");
     }
   };
@@ -100,7 +80,6 @@ export function LeaderBoard() {
     } else {
       console.log("Data updated:", data);
       // Optionally, refresh the data list after updating
-      alert("Update successfully!");
       getList();
     }
   };
@@ -126,44 +105,14 @@ export function LeaderBoard() {
                 {index > 2 && entry.name}
               </TableCell>
               <TableCell>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="example: 50"
-                    value={
-                      inputValues[entry.id] !== undefined
-                        ? inputValues[entry.id]
-                        : entry.change
-                    }
-                    onChange={(e) => handleInputChange(e, entry.id)}
-                  />
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline">Submit</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Your Session Change:
-                          <span className="ms-1">{inputValues[entry.id]}</span>
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          update your account from our servers.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleSubmit(entry.id)}
-                        >
-                          Confirm
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                <Input
+                  type="number"
+                  step="any"
+                  placeholder="example: 50"
+                  defaultValue={entry.change}
+                  onBlur={(e) => handleBlur(e, entry)} // Use a function reference
+                />
+                <Button variant="outline">Submit</Button>
               </TableCell>
               <TableCell className="text-right">
                 {entry.change > 0 ? (

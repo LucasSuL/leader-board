@@ -7,7 +7,7 @@ export default function Home() {
       {/* announcement */}
       <div className="bg-indigo-600 px-4 py-3 text-white">
         <p className="text-center text-sm font-medium">
-          🎉🎉 Next session on: 17 Aug 2024! 🎉🎉
+          🎉🎉 Next session on: 24 Aug 2024! 🎉🎉
         </p>
       </div>
 
