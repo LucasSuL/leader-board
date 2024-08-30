@@ -40,9 +40,7 @@ export default function Home() {
 
       {/* main */}
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <div className="text-2xl font-bold text-blue-600 md:text-5xl text-center pb-4">
-          Leader Board
-        </div>
+        
         <LeaderBoard />
       </div>
 
